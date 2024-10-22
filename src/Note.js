@@ -38,11 +38,11 @@ const Note = ({ title, category, content, status }) => {
                     {status !== undefined && (
                         <div className='me-md-3 me-lg-5'>
                             {status ? (
-                                <Icon.XCircle size={32} color='red' className='item' />
+                                <Icon.CheckCircle size={30} color='green' className='item' />
                             ) : (
-                                <Icon.CheckCircle size={32} color='green' className='item' />
+                                <Icon.XCircle size={30} color='red' className='item' />
                             )}
-                            <i>{status ? "Undone" : "Done"}</i>
+                            <i>{status ? "Done" : "Undone" }</i>
                         </div>
                     )}
                 </div>

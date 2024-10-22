@@ -11,7 +11,7 @@ class Notes extends Component {
             noteList: [
                 {
                     title: "Go to school",
-                    category: "Education",
+                    category: "To Do",
                     content: "First day at school",
                     date: '',
                     time: '',
@@ -27,7 +27,7 @@ class Notes extends Component {
                 },
                 {
                     title: "Meet friends",
-                    category: "Hobby",
+                    category: "To Do",
                     content: "Meeting in the park",
                     date: '',
                     time: '',
@@ -65,7 +65,7 @@ class Notes extends Component {
 
     addNote() {
         this.setState(state => {
-            var date = state.date === undefined ? "" : new Date(state.date);
+            var date = state.date === undefined ? "" : state.date;
             var time = state.time === undefined ? "" : state.time;
 
             const newNote = {
@@ -113,8 +113,8 @@ class Notes extends Component {
                                 <Note
                                 key = {key}
                                 title = {this.filter(note.title, 15)}
-                                category = {this.filter(note.category, 15)}
-                                content = {this.filter(note.content, 25)}
+                                category = {note.category}
+                                content = {this.filter(note.content, 24)}
                                 status = {note.status}
                                 />
                             );
@@ -129,14 +129,15 @@ class Notes extends Component {
                         <tr>
                             <td className='align-middle'><input type='text' placeholder='Title' id='title' value={this.state.title} onChange={(e) => this.onChange(e)} /></td>
                             <td className='align-middle'>
-                                <input type='text' list='categoryList' placeholder='Category' id='category' value={this.state.category} onChange={(e) => this.onChange(e)} />
-                                <datalist id='categoryList'>
-                                    <option>Education</option>
-                                    <option>Hobby</option>
-                                    <option>To Do</option>
-                                    <option>Work</option>
-                                    <option>Gym</option>
-                                </datalist>
+                                <select id='category' className='form-select' value={this.state.category} onChange={(e) => this.onChange(e)}>
+                                    <option value=''>Choose category</option>
+                                    <option value='Education'>Education</option>
+                                    <option value='Hobby'>Hobby</option>
+                                    <option value='To Do'>To Do</option>
+                                    <option value='Work'>Work</option>
+                                    <option value='Gym'>Gym</option>
+                                    <option value='Other'>Other</option>
+                                </select>
                             </td>
                             <td className='align-middle'>
                                 {

@@ -12,17 +12,6 @@ code {
     monospace;
 }
 
-.content {
-  margin-right: 10%;
-  margin-left: 10%;
-  font-size: 18px;
-}
-
-.checked {
-  color: green;
-  font-weight: bold;
-}
-
 .item {
   margin-right: 0.5rem;
 }
