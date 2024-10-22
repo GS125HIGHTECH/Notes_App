@@ -1,29 +1,61 @@
-import React from 'react';
 import PropTypes from 'prop-types'
+import * as Icon from 'react-bootstrap-icons';
 
-const Note = props => {
+const Note = ({ title, category, content, status }) => {
     return(
         <tr>
-            <td>{props.title}</td>
-            <td>{props.category}</td>
-            <td>{props.content}</td>
-            <td>{new Intl.DateTimeFormat('pl-PL').format(new Date(props.date))}</td>
+            <td className='align-middle ps-3'>{title}</td>
+            <td className='align-middle ps-3'>
+                <div className='d-flex justify-content-between align-items-center'>
+                    {category}
+                    {
+                        category === "To Do" ? 
+                        <Icon.ListCheck className='m-2' size={48} /> : 
+                        <Icon.FileText className='m-2' size={48} />
+                    }
+                </div>
+            </td>
+            <td className='align-middle ps-3'>{content}</td>
+            <td className='align-middle ps-3'>
+                <div className='d-flex align-items-center'>
+                    <div className='me-md-3 me-lg-5'>
+                        <Icon.List size={30} color='green' className='item' />
+                        <i>Detail</i>
+                    </div>
+                    <div className='me-md-3 me-lg-5'>
+                        <Icon.Bell size={30} color='#999900' className='item' />
+                        <i>Remind</i>
+                    </div>
+                    <div className='me-md-3 me-lg-5'>
+                        <Icon.Pencil size={28} color='blue' className='item' />
+                        <i>Edit</i>
+                    </div>
+                    <div className='me-md-3 me-lg-5'>
+                        <Icon.Trash size={30} color='black' className='item' />
+                        <i>Delete</i>
+                    </div>
+
+                    {status !== undefined && (
+                        <div className='me-md-3 me-lg-5'>
+                            {status ? (
+                                <Icon.CheckCircle size={30} color='green' className='item' />
+                            ) : (
+                                <Icon.XCircle size={30} color='red' className='item' />
+                            )}
+                            <i>{status ? "Done" : "Undone" }</i>
+                        </div>
+                    )}
+                </div>
+            </td>
         </tr>
     );
 }
 
 Note.propTypes = {
-    title: PropTypes.string.isRequired,
-    category: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
-    date: PropTypes.instanceOf(Date).isRequired
+    title: PropTypes.string,
+    category: PropTypes.string,
+    content: PropTypes.string,
+    status: PropTypes.bool
 };
-
-Note.defaultProps = {
-    title: "Note Title",
-    category: "Note Category",
-    content: "Note Content",
-    date: new Date(1)
-}
 
 export default Note;
