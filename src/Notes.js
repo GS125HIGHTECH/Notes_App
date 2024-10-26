@@ -1,7 +1,8 @@
 import Note from './Note';
-import { Table, Button } from 'react-bootstrap';
+import AddNote from './AddNote';
+import NoteClass from './class/NoteClass';
+import { Table } from 'react-bootstrap';
 import { Component } from 'react';
-import { confirmAlert } from 'react-confirm-alert';
 
 
 class Notes extends Component {
@@ -9,81 +10,32 @@ class Notes extends Component {
         super(props);
         this.state = {
             noteList: [
-                {
-                    title: "Go to school",
-                    category: "To Do",
-                    content: "First day at school",
-                    date: '',
-                    time: '',
-                    status: true
-                },
-                {
-                    title: "Go to cinema",
-                    category: "Hobby",
-                    content: "New movie with friends",
-                    date: '',
-                    time: '',
-                    status: undefined
-                },
-                {
-                    title: "Meet friends",
-                    category: "To Do",
-                    content: "Meeting in the park",
-                    date: '',
-                    time: '',
-                    status: false
-                }
+                new NoteClass(1, "Go to school", "To Do", "First day at school", true, '', ''),
+                new NoteClass(2, "Go to cinema", "Hobby", "New movie with friends", undefined, '', ''),
+                new NoteClass(3, "Meet friends", "To Do", "Meeting in the park", false, '', ''),
             ],
-            title: '',
-            content: '',
-            category: '',
-            date: '', 
-            time: '' 
         }
     }
 
-    onChange(e) {
-        var name = e.target.id;
-        this.setState({
-            [name]: e.target.value
-        })
-    }
-
-    onClick() {
-        confirmAlert({
-            customUI: ({onClose}) => {
-                return(
-                    <div>
-                        <h1>Add content</h1>
-                        <p><textarea cols={50} rows={10} id='content' defaultValue={this.state.content} onChange={(e) => this.onChange(e)}></textarea></p>
-                        <div className='d-flex justify-content-end'><Button variant='danger' onClick={onClose}>Close window</Button></div>
-                    </div>
-                )
-            }
-        }) 
-    }
-
-    addNote() {
+    addNote = (s) => {
         this.setState(state => {
-            var date = state.date === undefined ? "" : state.date;
-            var time = state.time === undefined ? "" : state.time;
+            const id = state.noteList.length + 1;
+            const date = s.date === undefined ? "" : s.date;
+            const time = s.time === undefined ? "" : s.time;
+            const status = s.category === "To Do" ? false : undefined;
 
-            const newNote = {
-                title: state.title,
-                category: state.category,
-                content: state.content,
-                date: date,
-                time: time,
-                status: state.category === "To Do" ? false : undefined
-            };
+            const newNote = new NoteClass(
+                id,
+                s.title,
+                s.category,
+                s.content,
+                status,
+                date,
+                time
+            );
 
             return { 
                 noteList: state.noteList.concat(newNote),
-                title: '',     
-                category: '',
-                content: '',
-                date: '',
-                time: ''
             };
         })
     }
@@ -121,41 +73,7 @@ class Notes extends Component {
                         })}
                     </tbody>
                 </Table>
-                <Table className='table-striped table-bordered table-responsive mt-5'>
-                    <tbody>
-                        <tr>
-                            <td colSpan={5} className='text-center'><i><b>Add note</b></i></td>
-                        </tr>
-                        <tr>
-                            <td className='align-middle'><input type='text' placeholder='Title' id='title' value={this.state.title} onChange={(e) => this.onChange(e)} /></td>
-                            <td className='align-middle'>
-                                <select id='category' className='form-select' value={this.state.category} onChange={(e) => this.onChange(e)}>
-                                    <option value=''>Choose category</option>
-                                    <option value='Education'>Education</option>
-                                    <option value='Hobby'>Hobby</option>
-                                    <option value='To Do'>To Do</option>
-                                    <option value='Work'>Work</option>
-                                    <option value='Gym'>Gym</option>
-                                    <option value='Other'>Other</option>
-                                </select>
-                            </td>
-                            <td className='align-middle'>
-                                {
-                                    this.state.content && this.state.content !== "" ? (
-                                        <Button variant='primary' onClick={() => this.onClick()}>Edit Content</Button>
-                                     ) : (
-                                        <Button variant='success' onClick={() => this.onClick()}>Add Content</Button>
-                                     )
-                                }
-                            </td>
-                            <td className='align-middle'>
-                                <input type='date' id='date' value={this.state.date} onChange={(e) => this.onChange(e)} />
-                                <input type='time' id='time' className='ms-2' value={this.state.time} onChange={(e) => this.onChange(e)} />
-                            </td>
-                            <td className='align-middle'><Button variant='primary' onClick={() => this.addNote()}>Add</Button></td>
-                        </tr>
-                    </tbody>
-                </Table>
+                <AddNote addNote = {this.addNote} />
                 </div>
             </div>
         );
