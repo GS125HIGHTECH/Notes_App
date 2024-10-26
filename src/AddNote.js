@@ -1,6 +1,5 @@
-import { Table, Button } from 'react-bootstrap';
+import { Modal, Button, Form } from 'react-bootstrap';
 import { Component } from 'react';
-import { confirmAlert } from 'react-confirm-alert';
 
 class AddNote extends Component {
     constructor(props) {
@@ -10,21 +9,21 @@ class AddNote extends Component {
             category: '',
             content: '',
             date: '',
-            time: ''
+            time: '',
+            errors: {}
         }
     }
 
     handleAddNote = () => {
-        const requiredFields = [
-            { field: 'title', message: 'Please add Title' },
-            { field: 'category', message: 'Please select a Category' }
-        ];
-    
-        for (let { field, message } of requiredFields) {
-            if (!this.state[field]) {
-                alert(message);
-                return;
-            }
+        const { title, category } = this.state;
+        const errors = {};
+
+        if (!title) errors.title = "Please add Title";
+        if (!category) errors.category = "Please select a Category";
+
+        if (Object.keys(errors).length > 0) {
+            this.setState({ errors });
+            return;
         }
 
         this.props.addNote(this.state);
@@ -34,68 +33,102 @@ class AddNote extends Component {
             category: '',
             content: '',
             date: '',
-            time: ''
+            time: '',
+            errors: {}
         });
     }
 
-    onChange(e) {
-        var name = e.target.id;
-        this.setState({
-            [name]: e.target.value
-        })
-    }
-
-    onClick() {
-        confirmAlert({
-            customUI: ({onClose}) => {
-                return(
-                    <div>
-                        <h1>Add content</h1>
-                        <p><textarea cols={50} rows={10} id='content' defaultValue={this.state.content} onChange={(e) => this.onChange(e)}></textarea></p>
-                        <div className='d-flex justify-content-end'><Button variant='danger' onClick={onClose}>Close window</Button></div>
-                    </div>
-                )
-            }
-        }) 
-    }
+    onChange = (e) => {
+        const { id, value } = e.target;
+        this.setState((prevState) => ({
+            [id]: value,
+            errors: { ...prevState.errors, [id]: undefined }
+        }));
+    };
 
     render() {
+        const { errors } = this.state;
+
         return(
-            <Table className='table-striped table-bordered table-responsive mt-5'>
-                        <tbody>
-                            <tr>
-                                <td colSpan={5} className='text-center'><i><b>Add note</b></i></td>
-                            </tr>
-                            <tr>
-                                <td className='align-middle'><input type='text' placeholder='Title' id='title' value={this.state.title} onChange={(e) => this.onChange(e)} /></td>
-                                <td className='align-middle'>
-                                    <select id='category' className='form-select' value={this.state.category} onChange={(e) => this.onChange(e)}>
-                                        <option value=''>Choose category</option>
-                                        <option value='Education'>Education</option>
-                                        <option value='Hobby'>Hobby</option>
-                                        <option value='To Do'>To Do</option>
-                                        <option value='Work'>Work</option>
-                                        <option value='Gym'>Gym</option>
-                                        <option value='Other'>Other</option>
-                                    </select>
-                                </td>
-                                <td className='align-middle'>
-                                    {
-                                        this.state.content && this.state.content !== "" ? (
-                                            <Button variant='primary' onClick={() => this.onClick()}>Edit Content</Button>
-                                        ) : (
-                                            <Button variant='success' onClick={() => this.onClick()}>Add Content</Button>
-                                        )
-                                    }
-                                </td>
-                                <td className='align-middle'>
-                                    <input type='date' id='date' value={this.state.date} onChange={(e) => this.onChange(e)} />
-                                    <input type='time' id='time' className='ms-2' value={this.state.time} onChange={(e) => this.onChange(e)} />
-                                </td>
-                                <td className='align-middle'><Button variant='primary' onClick={this.handleAddNote}>Add</Button></td>
-                            </tr>
-                        </tbody>
-                    </Table>
+            <Modal show={this.props.show} onHide={this.props.onHide}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Add Note</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Title</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Enter title"
+                                id="title"
+                                value={this.state.title}
+                                onChange={this.onChange}
+                                isInvalid={!!errors.title}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.title}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Category</Form.Label>
+                            <Form.Select
+                                id="category"
+                                value={this.state.category}
+                                onChange={this.onChange}
+                                isInvalid={!!errors.category}
+                            >
+                                <option value="">Choose category</option>
+                                <option value="Education">Education</option>
+                                <option value="Hobby">Hobby</option>
+                                <option value="To Do">To Do</option>
+                                <option value="Work">Work</option>
+                                <option value="Gym">Gym</option>
+                                <option value="Other">Other</option>
+                            </Form.Select>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.category}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Content</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                id="content"
+                                value={this.state.content}
+                                onChange={this.onChange}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Date</Form.Label>
+                            <Form.Control
+                                type="date"
+                                id="date"
+                                value={this.state.date}
+                                onChange={this.onChange}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Time</Form.Label>
+                            <Form.Control
+                                type="time"
+                                id="time"
+                                value={this.state.time}
+                                onChange={this.onChange}
+                            />
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={this.props.onHide}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={this.handleAddNote}>
+                        Add Note
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         )
     }
 }
