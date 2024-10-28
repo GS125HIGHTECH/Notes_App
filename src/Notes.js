@@ -6,27 +6,27 @@ import { Component } from 'react';
 
 
 class Notes extends Component {
-    constructor(props) {
-        super(props);
+    constructor() {
+        super();
         this.state = {
             noteList: [
                 new NoteClass(1, "Go to school", "To Do", "First day at school", true, '', ''),
                 new NoteClass(2, "Go to cinema", "Hobby", "New movie with friends", undefined, '', ''),
                 new NoteClass(3, "Meet friends", "To Do", "Meeting in the park", false, '', ''),
             ],
-            showAddNoteModal: false
+            showAddNoteModal: false,
+            nextId: 4
         }
     }
 
     addNote = (s) => {
         this.setState(state => {
-            const id = state.noteList.length + 1;
             const date = s.date === undefined ? "" : s.date;
             const time = s.time === undefined ? "" : s.time;
             const status = s.category === "To Do" ? false : undefined;
 
             const newNote = new NoteClass(
-                id,
+                state.nextId,
                 s.title,
                 s.category,
                 s.content,
@@ -37,6 +37,7 @@ class Notes extends Component {
 
             return { 
                 noteList: state.noteList.concat(newNote),
+                nextId: state.nextId + 1,
                 showAddNoteModal: false
             };
         })
@@ -71,10 +72,10 @@ class Notes extends Component {
                         </thead>
 
                         <tbody>
-                            {this.state.noteList.map( (note, key) => {
+                            {this.state.noteList.map( (note) => {
                                 return(
                                     <Note
-                                    key = {key}
+                                    key = {note.id}
                                     title = {this.filter(note.title, 15)}
                                     category = {note.category}
                                     content = {this.filter(note.content, 24)}
