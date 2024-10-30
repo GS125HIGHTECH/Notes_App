@@ -3,45 +3,69 @@ import AddNote from './AddNote';
 import NoteClass from './class/NoteClass';
 import { Table, Button } from 'react-bootstrap';
 import { Component } from 'react';
+import { getAllNotes, addNote, removeNote } from './api/NotesApi';
 
 
 class Notes extends Component {
     constructor() {
         super();
         this.state = {
-            noteList: [
-                new NoteClass(1, "Go to school", "To Do", "First day at school", true, '', ''),
-                new NoteClass(2, "Go to cinema", "Hobby", "New movie with friends", undefined, '', ''),
-                new NoteClass(3, "Meet friends", "To Do", "Meeting in the park", false, '', ''),
-            ],
+            noteList: [],
             showAddNoteModal: false,
             nextId: 4
         }
     }
 
-    addNote = (s) => {
-        this.setState(state => {
-            const date = s.date === undefined ? "" : s.date;
-            const time = s.time === undefined ? "" : s.time;
-            const status = s.category === "To Do" ? false : undefined;
-
-            const newNote = new NoteClass(
-                state.nextId,
-                s.title,
-                s.category,
-                s.content,
-                status,
-                date,
-                time
-            );
-
-            return { 
-                noteList: state.noteList.concat(newNote),
-                nextId: state.nextId + 1,
-                showAddNoteModal: false
-            };
-        })
+    async componentDidMount() {
+        try {
+            const notes = await getAllNotes();
+            this.setState({ noteList: notes });
+        } catch (error) {
+            console.error("Error fetching notes:", error);
+        }
     }
+
+    addNote = async (s) => {
+        const date = s.date || "";
+        const time = s.time || "";
+        const status = s.category === "To Do" ? false : undefined;
+        
+        const newNote = new NoteClass(
+            this.state.nextId,
+            s.title,
+            s.category,
+            s.content,
+            status,
+            date,
+            time
+        );
+
+        try {
+            const response = await addNote(newNote);
+            if (response.status === 201) {
+                this.setState(state => ({
+                    noteList: [...state.noteList, newNote],
+                    nextId: state.nextId + 1,
+                    showAddNoteModal: false
+                }));
+            }
+        } catch (error) {
+            console.error("Error adding note:", error);
+        }
+    }
+
+    handleDelete = async (id) => {
+        try {
+            const response = await removeNote(id);
+            if (response.status === 204) {
+                this.setState(state => ({
+                    noteList: state.noteList.filter(note => note.id !== id)
+                }));
+            }
+        } catch (error) {
+            console.error("Error deleting note:", error);
+        }
+    };
 
     toggleAddNoteModal = () => {
         this.setState({ showAddNoteModal: !this.state.showAddNoteModal });
@@ -80,6 +104,7 @@ class Notes extends Component {
                                     category = {note.category}
                                     content = {this.filter(note.content, 24)}
                                     status = {note.status}
+                                    onDelete={() => this.handleDelete(note.id)}
                                     />
                                 );
                             })}

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import * as Icon from 'react-bootstrap-icons';
 
-const Note = ({ title, category, content, status }) => {
+const Note = ({ title, category, content, status, onDelete }) => {
     return(
         <tr>
             <td className='align-middle ps-3'>{title}</td>
@@ -31,7 +31,7 @@ const Note = ({ title, category, content, status }) => {
                         <i>Edit</i>
                     </div>
                     <div className='me-md-3 me-lg-5'>
-                        <Icon.Trash size={30} color='black' className='item' />
+                        <Icon.Trash size={30} color='black' className='item' onClick={onDelete} />
                         <i>Delete</i>
                     </div>
 
@@ -55,7 +55,8 @@ Note.propTypes = {
     title: PropTypes.string,
     category: PropTypes.string,
     content: PropTypes.string,
-    status: PropTypes.bool
+    status: PropTypes.bool,
+    onDelete: PropTypes.func
 };
 
 export default Note;
