@@ -1,6 +1,5 @@
 import Note from './Note';
 import AddNote from './AddNote';
-import NoteClass from './class/NoteClass';
 import { Table, Button } from 'react-bootstrap';
 import { Component } from 'react';
 import { getAllNotes, addNote, removeNote } from './api/NotesApi';
@@ -12,7 +11,6 @@ class Notes extends Component {
         this.state = {
             noteList: [],
             showAddNoteModal: false,
-            nextId: 4
         }
     }
 
@@ -30,21 +28,21 @@ class Notes extends Component {
         const time = s.time || "";
         const status = s.category === "To Do" ? false : undefined;
         
-        const newNote = new NoteClass(
-            this.state.nextId,
-            s.title,
-            s.category,
-            s.content,
+        const newNote = {
+            title: s.title,
+            category: s.category,
+            content: s.content,
             status,
             date,
             time
-        );
+        };
 
         try {
             const response = await addNote(newNote);
             if (response.status === 201) {
+                const savedNote = response.data;
                 this.setState(state => ({
-                    noteList: [...state.noteList, newNote],
+                    noteList: [...state.noteList, savedNote],
                     nextId: state.nextId + 1,
                     showAddNoteModal: false
                 }));
